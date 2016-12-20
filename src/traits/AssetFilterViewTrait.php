@@ -19,7 +19,7 @@ trait AssetFilterViewTrait
 
         $this->trigger(AssetFilterEvent::EVT_BEFORE_BUNDLE_REGISTRATION, $event);
 
-        if (!$event->isPrevented()) {
+        if ($event->isPrevented()) {
             return false;
         }
 

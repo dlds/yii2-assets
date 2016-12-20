@@ -27,8 +27,6 @@ class AssetsFilter extends \yii\base\ActionFilter
     public $bundles = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
-        'dlds\intercooler\IntercoolerAsset',
-        'frontend\assets\GeneralAsset',
     ];
 
     /**
@@ -40,6 +38,20 @@ class AssetsFilter extends \yii\base\ActionFilter
      * @var boolean targets only ajax requests
      */
     public $ajaxOnly = true;
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        $traits = class_uses(\Yii::$app->view);
+
+        if (!ArrayHelper::isIn(traits\AssetFilterViewTrait::class, $traits)) {
+            throw new \yii\base\Exception(sprintf('AssetFilter says: "%s" must uses "%s" trait', get_class(\Yii::$app->view), traits\AssetFilterViewTrait::class));
+        }
+
+        parent::init();
+    }
 
     /**
      * @inheritdoc
@@ -62,7 +74,7 @@ class AssetsFilter extends \yii\base\ActionFilter
 
         \Yii::$app->view->on(AssetFilterEvent::EVT_BEFORE_BUNDLE_REGISTRATION, function($e) use($bundles) {
 
-            if (ArrayHelper::keyExists($e->bundle, $bundles)) {
+            if (ArrayHelper::isIn($e->bundle, $bundles)) {
                 $e->prevent();
             }
         });
